@@ -11,6 +11,10 @@ int current_animation = 0;
 
 void initialize_animations() {
   current_animation = STARTING_ANIMATION || 0;
+  if (current_animation != 0) {
+    cmd = String(current_animation);
+    process_command();
+  }
 }
 
 // Always run this method every loop.
