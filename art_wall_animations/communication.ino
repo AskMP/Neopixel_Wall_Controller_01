@@ -25,12 +25,12 @@ void process_command() {
       Serial.println("clear pixels");
       break;
     case 1:
-      set_all_panels(Color(200, 200, 200));
-      Serial.println("animation 1");
+      init_basic_rainbow_animation();
+      Serial.println("Basic Rainbow Animation");
       break;
     case 2:
-      set_all_panels(Color(200, 0, 0));
-      Serial.println("animation 2");
+      init_unique_rainbow_animation();
+      Serial.println("Unique Panel Rainbow Animation");
       break;
     case 3:
       set_all_panels(Color(0, 200, 0));
