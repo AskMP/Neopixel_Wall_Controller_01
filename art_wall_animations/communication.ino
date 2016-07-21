@@ -33,8 +33,8 @@ void process_command() {
       Serial.println("Unique Panel Rainbow Animation");
       break;
     case 3:
-      set_all_panels(Color(0, 200, 0));
-      Serial.println("animation 3");
+      init_sparkle_animation();
+      Serial.println("Custom sparkle animation? (Hopefully)");
       break;
     case 4:
       set_all_panels(Color(0, 0, 200));

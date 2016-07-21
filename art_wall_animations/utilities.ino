@@ -9,6 +9,12 @@ uint32_t Color(byte r, byte g, byte b) {
   return c;
 }
 
+void toRGB(uint32_t colour, int *r, int *g, int *b) {
+  *r = (uint8_t)(colour >> 16);
+  *g = (uint8_t)(colour >> 8);
+  *b = (uint8_t)(colour >> 0);
+}
+
 // Some type conversion helpers to clean and convert various inputs to other types
 String str(String val) {
   val.trim();
