@@ -21,27 +21,25 @@ void serialEvent() {
 // All input communication is run through here
 void process_command() {
   if (cmd == "" || cmd == "\n" || cmd == "\r") return;
-  Serial.println("\"" + String(num(cmd)) + "\"");
   switch (num(cmd)) {
     case 0:
       set_all_panels(0, true);
-      Serial.println("clear pixels");
+      init_off();
       break;
     case 1:
       init_basic_rainbow_animation();
-      Serial.println("Basic Rainbow Animation");
       break;
     case 2:
       init_unique_rainbow_animation();
-      Serial.println("Unique Panel Rainbow Animation");
       break;
     case 3:
       init_sparkle_animation();
-      Serial.println("Custom sparkle animation? (Hopefully)");
       break;
     case 4:
-      set_all_panels(Color(0, 0, 200));
-      Serial.println("animation 4");
+      init_chase_animation();
+      break;
+    case 5:
+      init_pulse_panel();
       break;
   }
 }

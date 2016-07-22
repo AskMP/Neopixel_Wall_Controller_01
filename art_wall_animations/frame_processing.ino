@@ -1,20 +1,24 @@
 int current_frame = 0;
 int max_frames = 1;
 int current_animation = 0;
+int animation_data1 = 0;
+int animation_data2 = 0;
 
 // Some basic colours for easy access
 #define WHITE  0xFFFFFF
 #define RED    0xFF0000
 #define GREEN  0x00FF00
 #define BLUE   0x0000FF
-#define BRAND  0xC9CC00
+#define BRAND1  0xCC00CC
+#define BRAND2  0x00FF00
 
 void initialize_animations() {
-  current_animation = STARTING_ANIMATION || 0;
+  current_animation = STARTING_ANIMATION;
   randomSeed(analogRead(0));
   if (current_animation != 0) {
     cmd = String(current_animation);
     process_command();
+    cmd = "";
   }
 }
 
@@ -30,10 +34,21 @@ void next_frame() {
     case 3:
       sparkle_animation();
       break;
+    case 4:
+      chase_animation();
+      break;
+    case 5:
+      pulse_panel();
+      break;
     default:
       current_frame = 0;
   }
   current_frame += (current_frame < max_frames) ? 1 : -1 * max_frames;
+}
+
+void init_off() {
+  current_animation = 0;
+  current_frame = 0;
 }
 
 /***
@@ -99,5 +114,56 @@ void sparkle_animation() {
     }
     panels[p].show();
   }
+}
+
+/***
+ * 
+ */
+void init_chase_animation() {
+  FPS = 60;
+  current_animation = 4;
+  current_frame = 0;
+  max_frames = 4;
+  set_all_panels(0, true);
+  animation_data1 = random(2);
+}
+
+void chase_animation() {
+  int curr = current_frame;
+  for (int p = 0; p < panel_count; p++) {
+    for (int i = 0; i < panels[p].numPixels(); i ++) {
+      if (curr % 5 == 0) {
+        panels[p].setPixelColor(i, BRAND2);
+      } else {
+        panels[p].setPixelColor(i, 0);
+      }
+      curr++;
+    }
+  }
+  show_all_panels();
+};
+
+void init_pulse_panel() {
+  current_animation = 5;
+  current_frame = 0;
+  max_frames = 500;
+  animation_data1 = 0;
+  set_all_panels(0, true);
+}
+
+void pulse_panel() {
+  int panel = animation_data1;
+  int rgb[3];
+  double multiplier = (double(100 / double(max_frames / 2)) * double((max_frames / 2) - abs((max_frames / 2) - current_frame))) / 100;
+  //Serial.println(multiplier);
+  if (current_frame == 0) {
+    panel = random(panel_count);
+    for (int i = 0; i < panel_count; i ++) if (i != panel) set_panel_pixels(i, 0, true);
+    set_all_panels(0, true);
+    animation_data1 = panel;
+    animation_data2 = Wheel(random(254));
+  }
+  toRGB(animation_data2, &rgb[0], &rgb[1], &rgb[2]);
+  set_panel_pixels(panel, Color(rgb[0] * multiplier, rgb[1] * multiplier, rgb[2] * multiplier));
 }
 
