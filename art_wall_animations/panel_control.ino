@@ -1,6 +1,6 @@
 void initialize_panels() {
   for (int i = 0; i < panel_count; i++) {
-    panels[i] = Adafruit_NeoPixel(60, panel_pins[i], NEO_GRB + NEO_KHZ800);
+    panels[i] = Adafruit_NeoPixel(panel_pin_counts[i], panel_pins[i], NEO_GRB + NEO_KHZ800);
     panels[i].begin();
   }
   show_all_panels();

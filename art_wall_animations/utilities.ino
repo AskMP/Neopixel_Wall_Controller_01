@@ -35,7 +35,7 @@ int num(String val) {
 bool conditional(String val) {
   val = str(val);
   if (val == "0" || val == "false" || val =="-1") return false;
-  else return true;
+  return true;
 }
 
 uint32_t Wheel(byte WheelPos) {

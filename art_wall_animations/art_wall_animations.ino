@@ -8,11 +8,11 @@
  */
 
 // Easy to access global settings
-int  STARTING_ANIMATION = 1;
+int  STARTING_ANIMATION = 2;
 int  FPS = 60;
 bool DEFAULT_SHOW_ON_SET_STRIP = true;
 bool DEFAULT_SHOW_ON_SET_ALL= true;
-bool REQUIRE_NEWLINE_FOR_SERIALEVENT = true;
+bool REQUIRE_NEWLINE_FOR_SERIALEVENT = false;
 bool DEBUG_MODE = false;
 
 #include <Adafruit_NeoPixel.h>
@@ -22,19 +22,43 @@ const int panel_count = 16;
 
 // Using the Arduino mega, we can use the odd pin numbers of the very end. These will be colour
 // coded upon installation.
-const int panel_pins[panel_count] = {23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, 51, 53};
+const int panel_pins[panel_count] = {
+  23, // Gray
+  25, // Purple
+  27, // Blue
+  29, // Green
+  31, // Yellow
+  33, // Orange
+  35, // Red
+  37, // Brown
+  39, // Gray
+  41, // Purple
+  43, // Blue
+  45, // Green
+  47, // Yellow
+  49, // Orange
+  51, // Red
+  53  // Brown
+};
 
 // Defaulting to 60 pixels each until we know actual numbers
 const int panel_pin_counts[panel_count] = {
-   59, // 6:45,
-   115, // 7:00
-   35, // 11:00-a
-   57, // 11:00-b
-   155, // big magnet
-   78, // zigzag-y
-   41, // small top
-   55, // Kite
-   0, 0, 0, 0, 0, 0, 0, 0
+   59, // 6:45 left
+   110, // 7:00 left
+   35, // 11:00-a left
+   57, // 11:00-b left
+   155, // big magnet left
+   78, // zigzag-y left
+   41, // small top left
+   55, // Kite  left
+   103, // left
+   95,  // right
+   68,  // right
+   65,  // right
+   43,  // right
+   112, // right
+   149, // right
+   109  // right
 };
 
 // This will likely be updated later to be captured dynamically in the setup rather than static
@@ -53,12 +77,14 @@ void setup() {
   initialize_panels();
   initialize_animations();
   Serial.begin(9600);
+  delay(500);
+  Serial.println("Ready!");
 }
 
 void loop() {
   // Ensure animations are non-blocking
   next_frame();
-  delay(int(1000 / FPS));
+  //delay(int(1000 / FPS));
 }
 
 // There is a "serialEvents" in the communcations tab that manages all serial data

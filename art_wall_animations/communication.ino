@@ -7,6 +7,7 @@ void serialEvent() {
     cmd += msg;
     if (REQUIRE_NEWLINE_FOR_SERIALEVENT) {
       if (msg == '\n') {
+        cmd.substring(0, cmd.length() - 2);
         process_command();
         cmd = "";
       }
@@ -19,6 +20,8 @@ void serialEvent() {
 
 // All input communication is run through here
 void process_command() {
+  if (cmd == "" || cmd == "\n" || cmd == "\r") return;
+  Serial.println("\"" + String(num(cmd)) + "\"");
   switch (num(cmd)) {
     case 0:
       set_all_panels(0, true);
