@@ -8,7 +8,7 @@
  */
   
 // Easy to access global settings
-#define STARTING_ANIMATION 2
+#define STARTING_ANIMATION 5
 #define DEFAULT_SHOW_ON_SET_STRIP true
 #define DEFAULT_SHOW_ON_SET_ALL true
 #define REQUIRE_NEWLINE_FOR_SERIALEVENT false

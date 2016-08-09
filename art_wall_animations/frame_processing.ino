@@ -3,6 +3,8 @@ int max_frames = 1;
 int current_animation = 0;
 int animation_data1 = 0;
 int animation_data2 = 0;
+int animation_data3 = 0;
+int animation_data4 = 0;
 
 bool useBrand1 = false;
 
@@ -65,6 +67,7 @@ void init_basic_rainbow_animation() {
 void basic_rainbow_animation_frame() {
   // Use the current frame to get the colour position and set all pixels to it
   set_all_panels(Wheel(current_frame), true);
+  current_frame++; // Added for faster FPS
 }
 
 /***
@@ -85,6 +88,7 @@ void unique_rainbow_animation_frame() {
     col -= (col >= 255) ? 255 : 0;
     set_panel_pixels(p, Wheel(col));
   }
+  current_frame++; // Added for faster FPS
 }
 /***
  * 
@@ -157,17 +161,29 @@ void init_pulse_panel() {
 
 void pulse_panel() {
   int panel = animation_data1;
+  int panel2 = animation_data3;
+  int panel3 = animation_data4;
   int rgb[3];
   double multiplier = (double(100 / double(max_frames / 2)) * double((max_frames / 2) - abs((max_frames / 2) - current_frame))) / 100;
-  //Serial.println(multiplier);
   if (current_frame == 0) {
     panel = random(panel_count);
+    panel2 = random(panel_count);
+    panel3 = random(panel_count);
+    while(panel2 == panel) panel2 = random(panel_count);
+    while(panel3 == panel) panel3 = random(panel_count);
+    while(panel2 == panel3) panel3 = random(panel_count);
     for (int i = 0; i < panel_count; i ++) if (i != panel) set_panel_pixels(i, 0, true);
     set_all_panels(0, true);
     animation_data1 = panel;
     animation_data2 = Wheel(random(254));
+    animation_data3 = panel2;
+    animation_data4 = panel3;
   }
   toRGB(animation_data2, &rgb[0], &rgb[1], &rgb[2]);
-  set_panel_pixels(panel, Color(rgb[0] * multiplier, rgb[1] * multiplier, rgb[2] * multiplier));
+  panel2 = animation_data3;
+  panel3 = animation_data4;
+  set_panel_pixels(panel, Color(rgb[0] * multiplier, rgb[1] * multiplier, rgb[2] * multiplier), true);
+  set_panel_pixels(panel2, Color(rgb[0] * multiplier, rgb[1] * multiplier, rgb[2] * multiplier), true);
+  set_panel_pixels(panel3, Color(rgb[0] * multiplier, rgb[1] * multiplier, rgb[2] * multiplier), true);
 }
 
