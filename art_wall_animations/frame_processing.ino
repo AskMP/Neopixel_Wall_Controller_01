@@ -4,6 +4,8 @@ int current_animation = 0;
 int animation_data1 = 0;
 int animation_data2 = 0;
 
+bool useBrand1 = false;
+
 // Some basic colours for easy access
 #define WHITE  0xFFFFFF
 #define RED    0xFF0000
@@ -126,6 +128,7 @@ void init_chase_animation() {
   max_frames = 4;
   set_all_panels(0, true);
   animation_data1 = random(2);
+  useBrand1 = !useBrand1;
 }
 
 void chase_animation() {
@@ -133,7 +136,8 @@ void chase_animation() {
   for (int p = 0; p < panel_count; p++) {
     for (int i = 0; i < panels[p].numPixels(); i ++) {
       if (curr % 5 == 0) {
-        panels[p].setPixelColor(i, BRAND2);
+        if (useBrand1) panels[p].setPixelColor(i, BRAND1);
+        else panels[p].setPixelColor(i, BRAND2);
       } else {
         panels[p].setPixelColor(i, 0);
       }
