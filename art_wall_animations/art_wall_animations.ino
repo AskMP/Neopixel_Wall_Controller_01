@@ -14,6 +14,14 @@
 #define REQUIRE_NEWLINE_FOR_SERIALEVENT false
 #define DEBUG_MODE false
 
+// Some basic colours for easy access
+#define WHITE  0xFFFFFF
+#define RED    0xFF0000
+#define GREEN  0x00FF00
+#define BLUE   0x0000FF
+#define BRAND1  0xCC00CC
+#define BRAND2  0x00FF00
+
 #include <Adafruit_NeoPixel.h>
 
 // How many panels there are that have LED strips
@@ -77,6 +85,27 @@ Adafruit_NeoPixel panels[panel_count];
 
 void setup() {
   Serial.begin(9600);
+  Serial.println("Potential Animations:");
+  Serial.println("---------------------------------------------------------------");
+  Serial.println("0  Turn all lights off");
+  Serial.println();
+  Serial.println("1  The whole wall turns a single colour and the spectrum rotates");
+  Serial.println("2  Flash random panels");
+  Serial.println("3  Every other panel is purple/green chase");
+  Serial.println("4  Flash random panels unique colours");
+  Serial.println("5  Pulse the panel(s) random colours");
+  Serial.println();
+  Serial.println("6  Each panel is a single colour of the spectrum and rotates");
+  Serial.println("7  Each panel has a rainbow and it rotates the spectrum");
+  Serial.println("8  Set Solid Purple");
+  Serial.println("9  Set Solid Green");
+  Serial.println("10  Chase animation Purple");
+  Serial.println("11  Chase animation Green");
+  Serial.println("12  Chase animation White");
+  Serial.println("13  Similar to camera flashes, randomly flash the LEDs white");
+
+
+  
   initialize_panels();
   initialize_animations();
 

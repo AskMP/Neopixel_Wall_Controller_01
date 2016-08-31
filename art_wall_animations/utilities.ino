@@ -51,3 +51,4 @@ uint32_t Wheel(byte WheelPos) {
   return Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
 
+

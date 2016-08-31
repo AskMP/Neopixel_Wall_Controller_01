@@ -5,16 +5,13 @@ int animation_data1 = 0;
 int animation_data2 = 0;
 int animation_data3 = 0;
 int animation_data4 = 0;
+int animation_data5 = 0;
+int animation_data6 = 0;
+
+uint32_t animation_colour1 = 0;
+uint32_t animation_colour2 = 0;
 
 bool useBrand1 = false;
-
-// Some basic colours for easy access
-#define WHITE  0xFFFFFF
-#define RED    0xFF0000
-#define GREEN  0x00FF00
-#define BLUE   0x0000FF
-#define BRAND1  0xCC00CC
-#define BRAND2  0x00FF00
 
 void initialize_animations() {
   current_animation = STARTING_ANIMATION;
@@ -44,6 +41,18 @@ void next_frame() {
     case 5:
       pulse_panel();
       break;
+    case 6:
+      panel_flash();
+      break;
+    case 7:
+      solid_colour();
+      break;
+    case 8:
+      even_odd_branding();
+      break;
+    case 9:
+      panel_rainbow();
+      break;
     default:
       current_frame = 0;
   }
@@ -51,6 +60,7 @@ void next_frame() {
 }
 
 void init_off() {
+  set_all_panels(0, true);
   current_animation = 0;
   current_frame = 0;
 }
@@ -67,7 +77,7 @@ void init_basic_rainbow_animation() {
 void basic_rainbow_animation_frame() {
   // Use the current frame to get the colour position and set all pixels to it
   set_all_panels(Wheel(current_frame), true);
-  current_frame++; // Added for faster FPS
+  current_frame += 4; // Added for faster FPS
 }
 
 /***
@@ -88,7 +98,7 @@ void unique_rainbow_animation_frame() {
     col -= (col >= 255) ? 255 : 0;
     set_panel_pixels(p, Wheel(col));
   }
-  current_frame++; // Added for faster FPS
+  current_frame += 4; // Added for faster FPS
 }
 /***
  * 
@@ -126,13 +136,18 @@ void sparkle_animation() {
  * 
  */
 void init_chase_animation() {
+  useBrand1 = !useBrand1;
+  animation_colour1 = (useBrand1) ? BRAND1 : BRAND2;
+  init_colour_chase_animation(animation_colour1);
+}
+
+void init_colour_chase_animation(uint32_t colour) {
   FPS = 60;
   current_animation = 4;
   current_frame = 0;
-  max_frames = 4;
+  max_frames = 54;
   set_all_panels(0, true);
-  animation_data1 = random(2);
-  useBrand1 = !useBrand1;
+  animation_colour1 = colour;
 }
 
 void chase_animation() {
@@ -140,8 +155,7 @@ void chase_animation() {
   for (int p = 0; p < panel_count; p++) {
     for (int i = 0; i < panels[p].numPixels(); i ++) {
       if (curr % 5 == 0) {
-        if (useBrand1) panels[p].setPixelColor(i, BRAND1);
-        else panels[p].setPixelColor(i, BRAND2);
+        panels[p].setPixelColor(i, animation_colour1);
       } else {
         panels[p].setPixelColor(i, 0);
       }
@@ -154,36 +168,138 @@ void chase_animation() {
 void init_pulse_panel() {
   current_animation = 5;
   current_frame = 0;
-  max_frames = 500;
+  max_frames = 100;
   animation_data1 = 0;
+  animation_data2 = 0;
+  animation_data3 = 0;
+  animation_data4 = 0;
+  animation_data5 = 0;
+  animation_data6 = 0;
   set_all_panels(0, true);
 }
 
 void pulse_panel() {
-  int panel = animation_data1;
-  int panel2 = animation_data3;
-  int panel3 = animation_data4;
+  int possiblePanels[panel_count] = {-1};
+  int currPanels[6] = {
+    animation_data1,
+    animation_data2,
+    animation_data3,
+    animation_data4,
+    animation_data5,
+    animation_data6
+  };
   int rgb[3];
   double multiplier = (double(100 / double(max_frames / 2)) * double((max_frames / 2) - abs((max_frames / 2) - current_frame))) / 100;
   if (current_frame == 0) {
-    panel = random(panel_count);
-    panel2 = random(panel_count);
-    panel3 = random(panel_count);
-    while(panel2 == panel) panel2 = random(panel_count);
-    while(panel3 == panel) panel3 = random(panel_count);
-    while(panel2 == panel3) panel3 = random(panel_count);
-    for (int i = 0; i < panel_count; i ++) if (i != panel) set_panel_pixels(i, 0, true);
+    for (int p = 0; p < panel_count; p++) possiblePanels[p] = p;
+    size_t n = sizeof(possiblePanels) / sizeof(possiblePanels[0]);
+    for (size_t pp = 0; pp < n; pp++) {
+      size_t new_pp = random(0, n - 1);
+      int t = possiblePanels[pp];
+      possiblePanels[pp] = possiblePanels[new_pp];
+      possiblePanels[new_pp] = t;
+    }
+    for (int cp = 0; cp < sizeof(currPanels); cp++) {
+      currPanels[cp] = possiblePanels[cp];
+    }
+    animation_data1 = currPanels[0];
+    animation_data2 = currPanels[1];
+    animation_data3 = currPanels[2];
+    animation_data4 = currPanels[3];
     set_all_panels(0, true);
-    animation_data1 = panel;
-    animation_data2 = Wheel(random(254));
-    animation_data3 = panel2;
-    animation_data4 = panel3;
+    animation_colour1 = Wheel(random(254));
   }
-  toRGB(animation_data2, &rgb[0], &rgb[1], &rgb[2]);
-  panel2 = animation_data3;
-  panel3 = animation_data4;
-  set_panel_pixels(panel, Color(rgb[0] * multiplier, rgb[1] * multiplier, rgb[2] * multiplier), true);
-  set_panel_pixels(panel2, Color(rgb[0] * multiplier, rgb[1] * multiplier, rgb[2] * multiplier), true);
-  set_panel_pixels(panel3, Color(rgb[0] * multiplier, rgb[1] * multiplier, rgb[2] * multiplier), true);
+  toRGB(animation_colour1, &rgb[0], &rgb[1], &rgb[2]);
+  for (int p = 0; p < sizeof(currPanels); p++) {
+    set_panel_pixels(currPanels[p], Color(rgb[0] * multiplier, rgb[1] * multiplier, rgb[2] * multiplier), true);
+  }
+}
+
+void init_panel_flash(int panel_qty, bool randomize) {
+  current_animation = 6;
+  current_frame = 0;
+  max_frames = 1;
+  animation_data1 = panel_qty;
+  animation_data2 = (randomize) ? 1 : 0;
+  set_all_panels(0, true);
+}
+
+void panel_flash() {
+  set_all_panels(0, true);
+  int animation_panels[panel_count] = {-1};
+  int curr_panel = 0;
+  uint32_t curr_colour = 0;
+  for (int i = 0; i < animation_data1; i++) {
+    curr_panel = random(panel_count);
+    for (int p = 0; p < animation_data1; p++) {
+      while (curr_panel == animation_panels[p]) curr_panel = random(panel_count);
+    }
+    curr_colour = (animation_data2 == 1) ? Wheel(random(254)) : WHITE;
+    //curr_colour = (animation_data2 == 1) ? random(2) == 1 ? BRAND1 : BRAND2 : WHITE;
+    set_panel_pixels(curr_panel, curr_colour);
+  }
+  if (animation_data2 == 1) {
+    delay(1000 / 10);
+  } else {
+    delay(1000 / 15);
+  }
+  
+}
+
+void init_solid_colour(uint32_t colour) {
+  current_animation = 7;
+  animation_colour1 = colour;
+  current_frame = 0;
+  max_frames = 1;
+}
+
+void solid_colour() {
+  set_all_panels(animation_colour1, true);
+}
+
+void init_even_odd_branding() {
+  current_animation = 8;
+  animation_colour1 = BRAND1;
+  animation_colour2 = BRAND2;
+  current_frame = 0;
+  max_frames = 54;
+}
+
+void even_odd_branding() {
+  int curr = 0;
+  uint32_t curr_colour = 0;
+  for (int p = 0; p < panel_count; p++) {
+    curr_colour = (p % 2 == 1) ? animation_colour1 : animation_colour2;
+    curr = current_frame;
+    for (int i = 0; i < panels[p].numPixels(); i++) {
+      if (curr % 7 == 0) {
+        panels[p].setPixelColor(i, curr_colour);
+      } else {
+        panels[p].setPixelColor(i, 0);
+      }
+      curr++;
+    }
+    show_panel_pixels(p);
+  }
+}
+
+void init_panel_rainbow() {
+  current_animation = 9;
+  max_frames = 255;
+  current_frame = 0;
+}
+
+void panel_rainbow() {
+  int i = 0;
+  int p = 0;
+  int wheelPos = 0;
+  for (p = 0; p < panel_count; p++) {
+    for (i = 0; i < panels[p].numPixels(); i ++) {
+      wheelPos = 255 / panels[p].numPixels() * i + current_frame;
+      panels[p].setPixelColor(i, Wheel(wheelPos));
+    }
+    show_panel_pixels(p);
+  }
+  current_frame += 4;
 }
 
